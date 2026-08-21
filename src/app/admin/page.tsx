@@ -53,13 +53,15 @@ export default function AdminDashboard() {
           leaves: [
             {
               id: 'l-1',
+              teacher: { user: { name: 'Dr. Pratibha Rao' } },
               teacherName: 'Dr. Pratibha Rao',
               department: 'Computer Applications',
-              type: 'CASUAL',
+              leaveType: 'CASUAL',
               startDate: new Date().toISOString().split('T')[0],
               endDate: new Date().toISOString().split('T')[0],
               reason: 'Academic Conference at Bangalore University',
               status: 'PENDING',
+              affectedClassesCount: 2,
             },
           ],
         });
@@ -258,9 +260,11 @@ export default function AdminDashboard() {
                   <div key={l.id} className="py-3 flex items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-stone-900">{l.teacher.user.name}</span>
+                        <span className="font-bold text-xs text-stone-900">
+                          {l.teacher?.user?.name || l.teacherName || 'Faculty Member'}
+                        </span>
                         <span className="bg-amber-50 text-amber-900 text-[10px] font-bold px-1.5 py-0.2 rounded border border-amber-200">
-                          {l.leaveType}
+                          {l.leaveType || l.type || 'CASUAL'}
                         </span>
                       </div>
                       <p className="text-[11px] text-stone-500 mt-0.5">

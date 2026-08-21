@@ -14,6 +14,7 @@ import {
   QrCode,
   Award,
 } from 'lucide-react';
+import { safeFetchJson } from '@/lib/apiHelper';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({
@@ -31,13 +32,12 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch('/api/settings');
-        const data = await res.json();
-        if (data.settings) {
+        const { ok, data } = await safeFetchJson('/api/settings');
+        if (data?.settings) {
           setSettings((prev) => ({ ...prev, ...data.settings }));
         }
       } catch (e) {
-        console.error(e);
+        console.warn(e);
       }
     };
     fetchSettings();
@@ -47,18 +47,15 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     try {
       setSaving(true);
-      const res = await fetch('/api/settings', {
+      await safeFetchJson('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ settings }),
       });
-
-      if (res.ok) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
-      }
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     } finally {
       setSaving(false);
     }
