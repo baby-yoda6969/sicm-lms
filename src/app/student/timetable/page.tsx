@@ -251,10 +251,22 @@ export default function StudentDailyTimetablePage() {
                         {/* Tea Break in clean theme after Period 2 */}
                         {c.slotNumber === 2 && (
                           <tr className="bg-amber-50/50 border-y border-amber-200/80">
-                            <td colSpan={6} className="py-2 px-5 text-center">
+                            <td colSpan={6} className="py-2.5 px-5 text-center">
                               <div className="flex items-center justify-center gap-2 text-amber-900 font-bold text-[11px]">
                                 <Coffee className="size-3.5 text-amber-600" />
-                                <span>COLLEGIATE TEA & MENTORSHIP RECESS (10:30 – 10:45 AM)</span>
+                                <span>COLLEGIATE TEA & MENTORSHIP RECESS (11:00 AM – 11:15 AM)</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* Lunch Break in clean theme after Period 4 */}
+                        {c.slotNumber === 4 && (
+                          <tr className="bg-orange-50/50 border-y border-orange-200/80">
+                            <td colSpan={6} className="py-2.5 px-5 text-center">
+                              <div className="flex items-center justify-center gap-2 text-orange-950 font-bold text-[11px]">
+                                <Coffee className="size-3.5 text-orange-600" />
+                                <span>INSTITUTIONAL LUNCH RECESS (01:15 PM – 01:45 PM)</span>
                               </div>
                             </td>
                           </tr>

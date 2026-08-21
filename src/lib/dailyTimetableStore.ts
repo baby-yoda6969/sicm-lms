@@ -107,7 +107,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p1-bca2`,
       slotNumber: 1,
-      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
+      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00 AM', endTime: '10:00 AM' },
       subject: { id: 's-bca401', code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
       section: { id: 'sec-2', name: 'BCA 2nd Year', program: 'BCA', totalStudents: 70 },
       room: { roomNumber: 'Lab 3', name: 'Computer Applications Lab 3' },
@@ -120,7 +120,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p1-bca1`,
       slotNumber: 1,
-      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
+      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00 AM', endTime: '10:00 AM' },
       subject: { id: 's-bca202', code: 'BCA202', name: 'Digital Electronics & Logic', color: '#0284C7' },
       section: { id: 'sec-1', name: 'BCA 1st Year', program: 'BCA', totalStudents: 72 },
       room: { roomNumber: 'Room 101', name: 'First Floor' },
@@ -133,7 +133,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p1-bca3`,
       slotNumber: 1,
-      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
+      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00 AM', endTime: '10:00 AM' },
       subject: { id: 's-bca601', code: 'BCA601', name: 'Cloud Computing & DevOps', color: '#16A34A' },
       section: { id: 'sec-3', name: 'BCA 3rd Year', program: 'BCA', totalStudents: 68 },
       room: { roomNumber: 'Room 302', name: 'Third Floor' },
@@ -146,7 +146,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p1-bcom1`,
       slotNumber: 1,
-      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
+      timeSlot: { slotNumber: 1, name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00 AM', endTime: '10:00 AM' },
       subject: { id: 's-bcom101', code: 'BCOM101', name: 'Financial Accounting I', color: '#B45309' },
       section: { id: 'sec-4', name: 'B.Com 1st Year', program: 'B.Com', totalStudents: 75 },
       room: { roomNumber: 'Room 201', name: 'Commerce Wing' },
@@ -164,7 +164,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p2-bca2`,
       slotNumber: 2,
-      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00', endTime: '11:00' },
+      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00 AM', endTime: '11:00 AM' },
       subject: { id: 's-bca402', code: 'BCA402', name: 'Database Management Systems', color: '#0284C7' },
       section: { id: 'sec-2', name: 'BCA 2nd Year', program: 'BCA', totalStudents: 70 },
       room: { roomNumber: 'Room 204', name: 'Main Academic Block' },
@@ -177,7 +177,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p2-bca1`,
       slotNumber: 2,
-      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00', endTime: '11:00' },
+      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00 AM', endTime: '11:00 AM' },
       subject: { id: 's-bca201', code: 'BCA201', name: 'Data Structures & Algorithms', color: '#EA580C' },
       section: { id: 'sec-1', name: 'BCA 1st Year', program: 'BCA', totalStudents: 72 },
       room: { roomNumber: 'Room 101', name: 'First Floor' },
@@ -190,7 +190,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p2-bca3`,
       slotNumber: 2,
-      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00', endTime: '11:00' },
+      timeSlot: { slotNumber: 2, name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00 AM', endTime: '11:00 AM' },
       subject: { id: 's-bca602', code: 'BCA602', name: 'Machine Learning Foundations', color: '#7C3AED' },
       section: { id: 'sec-3', name: 'BCA 3rd Year', program: 'BCA', totalStudents: 68 },
       room: { roomNumber: 'Room 302', name: 'Third Floor' },
@@ -207,7 +207,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p3-bca2`,
       slotNumber: 3,
-      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15', endTime: '12:15' },
+      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15 AM', endTime: '12:15 PM' },
       subject: { id: 's-bcom201', code: 'BCOM201', name: 'Corporate Accounting', color: '#B45309' },
       section: { id: 'sec-2', name: 'BCA 2nd Year', program: 'BCA', totalStudents: 70 },
       room: { roomNumber: 'Room 204', name: 'Main Academic Block' },
@@ -222,7 +222,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p3-bca1`,
       slotNumber: 3,
-      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15', endTime: '12:15' },
+      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15 AM', endTime: '12:15 PM' },
       subject: { id: 's-bca203', code: 'BCA203', name: 'Discrete Mathematics', color: '#0D2F6B' },
       section: { id: 'sec-1', name: 'BCA 1st Year', program: 'BCA', totalStudents: 72 },
       room: { roomNumber: 'Room 101', name: 'First Floor' },
@@ -235,7 +235,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p3-bca3`,
       slotNumber: 3,
-      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15', endTime: '12:15' },
+      timeSlot: { slotNumber: 3, name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15 AM', endTime: '12:15 PM' },
       subject: { id: 's-bca603', code: 'BCA603', name: 'Information Security & Cyber Forensics', color: '#DC2626' },
       section: { id: 'sec-3', name: 'BCA 3rd Year', program: 'BCA', totalStudents: 68 },
       room: { roomNumber: 'Room 302', name: 'Third Floor' },
@@ -252,7 +252,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p4-bca2`,
       slotNumber: 4,
-      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15', endTime: '13:15' },
+      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15 PM', endTime: '01:15 PM' },
       subject: { id: 's-bca403', code: 'BCA403', name: 'Operating Systems & Architecture', color: '#16A34A' },
       section: { id: 'sec-2', name: 'BCA 2nd Year', program: 'BCA', totalStudents: 70 },
       room: { roomNumber: 'Room 204', name: 'Main Academic Block' },
@@ -265,7 +265,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p4-bca1`,
       slotNumber: 4,
-      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15', endTime: '13:15' },
+      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15 PM', endTime: '01:15 PM' },
       subject: { id: 's-bca204', code: 'BCA204', name: 'Professional Communication', color: '#7C3AED' },
       section: { id: 'sec-1', name: 'BCA 1st Year', program: 'BCA', totalStudents: 72 },
       room: { roomNumber: 'Room 101', name: 'First Floor' },
@@ -278,7 +278,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p4-bca3`,
       slotNumber: 4,
-      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15', endTime: '13:15' },
+      timeSlot: { slotNumber: 4, name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15 PM', endTime: '01:15 PM' },
       subject: { id: 's-bca604', code: 'BCA604', name: 'Major Project Supervision & Review', color: '#0D2F6B' },
       section: { id: 'sec-3', name: 'BCA 3rd Year', program: 'BCA', totalStudents: 68 },
       room: { roomNumber: 'Lab 2', name: 'Applications Lab 2' },
@@ -295,7 +295,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p5-bca2`,
       slotNumber: 5,
-      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '13:45', endTime: '14:45' },
+      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '01:45 PM', endTime: '02:45 PM' },
       subject: { id: 's-bca401l', code: 'BCA401L', name: 'Python Programming Practical Lab', color: '#7C3AED' },
       section: { id: 'sec-2', name: 'BCA 2nd Year', program: 'BCA', totalStudents: 70 },
       room: { roomNumber: 'Lab 3', name: 'Computer Applications Lab 3' },
@@ -308,7 +308,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p5-bca1`,
       slotNumber: 5,
-      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '13:45', endTime: '14:45' },
+      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '01:45 PM', endTime: '02:45 PM' },
       subject: { id: 's-bca201l', code: 'BCA201L', name: 'Data Structures Practical Lab', color: '#EA580C' },
       section: { id: 'sec-1', name: 'BCA 1st Year', program: 'BCA', totalStudents: 72 },
       room: { roomNumber: 'Lab 2', name: 'Applications Lab 2' },
@@ -321,7 +321,7 @@ export function generateAdminDailyScheduleForDate(dateStr: string): AdminDailyGe
     {
       id: `tt-${dateStr}-p5-bca3`,
       slotNumber: 5,
-      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '13:45', endTime: '14:45' },
+      timeSlot: { slotNumber: 5, name: 'Period 5 (01:45 - 02:45 PM)', startTime: '01:45 PM', endTime: '02:45 PM' },
       subject: { id: 's-bca601l', code: 'BCA601L', name: 'Cloud Infrastructure & DevOps Lab', color: '#16A34A' },
       section: { id: 'sec-3', name: 'BCA 3rd Year', program: 'BCA', totalStudents: 68 },
       room: { roomNumber: 'Lab 1', name: 'Systems Lab 1' },
