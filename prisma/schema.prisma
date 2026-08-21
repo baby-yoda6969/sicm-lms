@@ -1,0 +1,285 @@
+// Prisma schema for SICM Smart Timetable & Attendance Management System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  password      String          // Plain or hashed demo
+  role          String          @default("STUDENT") // ADMIN, TEACHER, STUDENT
+  phone         String?
+  avatar        String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  teacherProfile TeacherProfile?
+  studentProfile StudentProfile?
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+}
+
+model Department {
+  id          String           @id @default(uuid())
+  code        String           @unique // e.g. "BCA", "BCOM", "BBA"
+  name        String           // e.g. "Department of Computer Applications"
+  description String?
+  programs    Program[]
+  teachers    TeacherProfile[]
+  subjects    Subject[]
+  createdAt   DateTime         @default(now())
+}
+
+model Program {
+  id             String           @id @default(uuid())
+  code           String           @unique // e.g. "BCA-REG", "BCOM-REG"
+  name           String           // e.g. "Bachelor of Computer Applications"
+  departmentId   String
+  department     Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  totalSemesters Int              @default(6)
+  durationYears  Int              @default(3)
+  semesters      Semester[]
+  students       StudentProfile[]
+}
+
+model Semester {
+  id             String           @id @default(uuid())
+  programId      String
+  program        Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  semesterNumber Int              // 1 to 6
+  academicYear   String           // "2026-2027"
+  sections       Section[]
+  subjects       Subject[]
+  students       StudentProfile[]
+}
+
+model Section {
+  id           String           @id @default(uuid())
+  semesterId   String
+  semester     Semester         @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  name         String           // "A", "B", "C"
+  capacity     Int              @default(60)
+  students     StudentProfile[]
+  timetables   Timetable[]
+  sessions     AttendanceSession[]
+}
+
+model Subject {
+  id           String           @id @default(uuid())
+  code         String           @unique // "BCA401"
+  name         String           // "Database Management Systems"
+  departmentId String
+  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  semesterId   String
+  semester     Semester         @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  credits      Int              @default(4)
+  type         String           @default("THEORY") // THEORY, LAB, PRACTICAL
+  hoursPerWeek Int              @default(4)
+  color        String           @default("#3b82f6") // Visual tag color
+  timetables   Timetable[]
+  sessions     AttendanceSession[]
+}
+
+model Room {
+  id          String      @id @default(uuid())
+  roomNumber  String      @unique // "Lab 101", "Room 204", "Smart Hall 301"
+  name        String      // "Computer Lab 1", "Lecture Hall 4"
+  building    String      @default("Main Block")
+  floor       Int         @default(1)
+  capacity    Int         @default(60)
+  type        String      @default("CLASSROOM") // CLASSROOM, LAB, SEMINAR_HALL, AUDITORIUM
+  isAvailable Boolean     @default(true)
+  timetables  Timetable[]
+}
+
+model TeacherProfile {
+  id               String                @id @default(uuid())
+  userId           String                @unique
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode     String                @unique // "SICM-FAC-101"
+  departmentId     String
+  department       Department            @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  designation      String                // "Associate Professor & HOD", "Assistant Professor"
+  qualification    String                // "Ph.D., M.Tech", "MCA", "M.Com, NET"
+  maxHoursPerWeek  Int                   @default(18)
+  availabilities   TeacherAvailability[]
+  leaves           TeacherLeave[]
+  dailyCheckins    DailyTeacherCheckin[]
+  timetables       Timetable[]           @relation("PrimaryTeacher")
+  substituteTables Timetable[]           @relation("SubstituteTeacher")
+  sessions         AttendanceSession[]
+}
+
+model DailyTeacherCheckin {
+  id             String         @id @default(uuid())
+  teacherId      String
+  teacher        TeacherProfile @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  date           String         // YYYY-MM-DD
+  status         String         @default("PRESENT") // PRESENT, ABSENT, PARTIAL
+  reason         String?        // Reason if absent or partial
+  availableSlots String?        // JSON array or comma separated slot IDs
+  declaredAt     DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([teacherId, date])
+}
+
+model StudentProfile {
+  id             String             @id @default(uuid())
+  userId         String             @unique
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rollNumber     String             @unique // "22BCA001"
+  registerNumber String             @unique // "U18CM21S0001"
+  programId      String
+  program        Program            @relation(fields: [programId], references: [id], onDelete: Cascade)
+  semesterId     String
+  semester       Semester           @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  sectionId      String
+  section        Section            @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  batch          String             @default("2024-2027")
+  attendance     AttendanceRecord[]
+}
+
+model TimeSlot {
+  id             String                @id @default(uuid())
+  slotNumber     Int                   @unique // 1, 2, 3, 4, 5, 6
+  name           String                // "Period 1 (08:30 - 09:30)"
+  startTime      String                // "08:30"
+  endTime        String                // "09:30"
+  isBreak        Boolean               @default(false)
+  timetables     Timetable[]
+  availabilities TeacherAvailability[]
+  sessions       AttendanceSession[]
+}
+
+model TeacherAvailability {
+  id         String             @id @default(uuid())
+  teacherId  String
+  teacher    TeacherProfile     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  dayOfWeek  String             // MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+  timeSlotId String
+  timeSlot   TimeSlot           @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  status     String             @default("AVAILABLE") // AVAILABLE, UNAVAILABLE, PARTIAL
+  notes      String?
+
+  @@unique([teacherId, dayOfWeek, timeSlotId])
+}
+
+model TeacherLeave {
+  id                 String         @id @default(uuid())
+  teacherId          String
+  teacher            TeacherProfile @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  startDate          String         // YYYY-MM-DD
+  endDate            String         // YYYY-MM-DD
+  leaveType          String         @default("CASUAL") // CASUAL, MEDICAL, ACADEMIC, EMERGENCY
+  reason             String
+  status             String         @default("PENDING") // PENDING, APPROVED, REJECTED
+  appliedAt          DateTime       @default(now())
+  reviewedAt         DateTime?
+  reviewedBy         String?        // Admin User ID
+  substituteAssigned Boolean        @default(false)
+  substituteNotes    String?
+}
+
+model Timetable {
+  id                  String          @id @default(uuid())
+  dayOfWeek           String          // MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+  timeSlotId          String
+  timeSlot            TimeSlot        @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  subjectId           String
+  subject             Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacherId           String
+  teacher             TeacherProfile  @relation("PrimaryTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  sectionId           String
+  section             Section         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  roomId              String
+  room                Room            @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  substituteTeacherId String?
+  substituteTeacher   TeacherProfile? @relation("SubstituteTeacher", fields: [substituteTeacherId], references: [id])
+  status              String          @default("ACTIVE") // ACTIVE, CANCELLED, RESCHEDULED
+  academicYear        String          @default("2026-2027")
+  notes               String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  sessions            AttendanceSession[]
+
+  @@unique([dayOfWeek, timeSlotId, sectionId])
+}
+
+model AttendanceSession {
+  id               String             @id @default(uuid())
+  timetableId      String
+  timetable        Timetable          @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  date             String             // YYYY-MM-DD
+  timeSlotId       String
+  timeSlot         TimeSlot           @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  teacherId        String
+  teacher          TeacherProfile     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  sectionId        String
+  section          Section            @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  subjectId        String
+  subject          Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  status           String             @default("COMPLETED") // SCHEDULED, COMPLETED, CANCELLED
+  qrToken          String?            // Temporary rotating token
+  qrExpiresAt      DateTime?
+  markedAt         DateTime           @default(now())
+  substituteMarked Boolean            @default(false)
+  records          AttendanceRecord[]
+
+  @@unique([timetableId, date])
+}
+
+model AttendanceRecord {
+  id         String            @id @default(uuid())
+  sessionId  String
+  session    AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status     String            @default("PRESENT") // PRESENT, ABSENT, LATE, EXCUSED
+  markedVia  String            @default("MANUAL") // MANUAL, QR, ADMIN_OVERRIDE
+  remarks    String?
+  markedAt   DateTime          @default(now())
+
+  @@unique([sessionId, studentId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String           @default("INFO") // INFO, WARNING, ALERT, TIMETABLE, ATTENDANCE, LEAVE
+  isRead    Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  category    String   @default("GENERAL")
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName  String?
+  action    String   // "CREATE_TIMETABLE", "MARK_ATTENDANCE", "ASSIGN_SUBSTITUTE", etc.
+  entity    String   // "Timetable", "AttendanceSession", "TeacherLeave"
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+}
