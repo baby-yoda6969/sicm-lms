@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { getAssetPath } from '@/lib/utils';
 
 /** Left brand panel on the login page inspired by Concord design system. */
 export function LoginBrandPanel() {
@@ -122,7 +123,17 @@ export function LoginBrandPanel() {
       {/* —— Foreground: name is the hero —— */}
       <div className="relative z-10 flex flex-col items-center px-10 text-center text-[#f7faf9]">
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 p-2 shadow-sm ring-1 ring-white/20 backdrop-blur-md">
-          <img src="/logo.png" alt="SICM Emblem" className="h-full w-full object-contain" />
+          <img
+            src={getAssetPath('/logo.png')}
+            alt="SICM Emblem"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes('/sicm-lms/')) {
+                target.src = '/sicm-lms/logo.png';
+              }
+            }}
+            className="h-full w-full object-contain"
+          />
         </div>
         <h1 className="font-serif text-[clamp(4.5rem,8.5vw,6.75rem)] font-normal leading-[0.88] tracking-[-0.04em] text-white">
           SICM

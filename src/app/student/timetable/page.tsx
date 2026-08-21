@@ -138,7 +138,17 @@ export default function StudentDailyTimetablePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div className="flex items-center gap-4">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-sky-200">
-                  <img src="/logo.png" alt="SICM Emblem" className="h-full w-full object-contain" />
+                  <img
+                    src={getAssetPath('/logo.png')}
+                    alt="SICM Emblem"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.src.includes('/sicm-lms/')) {
+                        target.src = '/sicm-lms/logo.png';
+                      }
+                    }}
+                    className="h-full w-full object-contain"
+                  />
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700 block">

@@ -74,3 +74,17 @@ export function getDayName(dayIndex: number): string {
   const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
   return days[dayIndex] || 'MONDAY';
 }
+
+/**
+ * Returns the correct asset path whether hosted locally or on GitHub Pages (/sicm-lms).
+ */
+export function getAssetPath(path: string): string {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/sicm-lms')) {
+    return `/sicm-lms${cleanPath}`;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return `/sicm-lms${cleanPath}`;
+  }
+  return cleanPath;
+}

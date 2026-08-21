@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
+import { getAssetPath } from '@/lib/utils';
 import {
   QrCode,
   RefreshCw,
@@ -272,7 +273,17 @@ function QrSessionContent() {
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-11 w-11 p-1 bg-white rounded-2xl shadow-xs ring-1 ring-stone-200 flex items-center justify-center">
-                <img src="/logo.png" alt="SICM" className="h-full w-full object-contain" />
+                <img
+                  src={getAssetPath('/logo.png')}
+                  alt="SICM"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('/sicm-lms/')) {
+                      target.src = '/sicm-lms/logo.png';
+                    }
+                  }}
+                  className="h-full w-full object-contain"
+                />
               </div>
               <div className="text-left">
                 <span className="rounded-full bg-crimson-50 border border-crimson-200 px-3 py-0.5 text-xs font-bold text-crimson-900 inline-block">

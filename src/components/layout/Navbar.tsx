@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { getAssetPath } from '@/lib/utils';
 import { useNotifications } from '@/context/NotificationContext';
 import { useSidebar } from '@/context/SidebarContext';
 import {
@@ -60,8 +61,14 @@ export default function Navbar() {
             className="group relative flex size-10 items-center justify-center rounded-xl bg-white p-1 shadow-2xs ring-1 ring-stone-200 hover:ring-blue-500 transition-all cursor-pointer"
           >
             <img
-              src="/logo.png"
+              src={getAssetPath('/logo.png')}
               alt="SICM Logo"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.includes('/sicm-lms/')) {
+                  target.src = '/sicm-lms/logo.png';
+                }
+              }}
               className="h-full w-full object-contain transition-transform group-hover:scale-90"
             />
             {/* Smooth hover expand icon overlay */}
@@ -75,8 +82,14 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-2.5 group overflow-hidden">
               <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-white p-0.5 shadow-2xs ring-1 ring-stone-200 group-hover:scale-105 transition-transform">
                 <img
-                  src="/logo.png"
+                  src={getAssetPath('/logo.png')}
                   alt="SICM"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('/sicm-lms/')) {
+                      target.src = '/sicm-lms/logo.png';
+                    }
+                  }}
                   className="h-full w-full object-contain"
                 />
               </div>

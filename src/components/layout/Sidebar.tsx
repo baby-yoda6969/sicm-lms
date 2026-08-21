@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useSidebar } from '@/context/SidebarContext';
+import { getAssetPath } from '@/lib/utils';
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -168,14 +169,34 @@ export default function Sidebar() {
               className="flex size-8 items-center justify-center rounded-lg bg-stone-50 p-1 ring-1 ring-stone-200/80 shadow-2xs"
               title="Seshadripuram Institute of Commerce & Management"
             >
-              <img src="/logo.png" alt="SICM" className="h-full w-full object-contain" />
+              <img
+                src={getAssetPath('/logo.png')}
+                alt="SICM"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('/sicm-lms/')) {
+                    target.src = '/sicm-lms/logo.png';
+                  }
+                }}
+                className="h-full w-full object-contain"
+              />
             </div>
           </div>
         ) : (
           <div className="rounded-xl border border-stone-200 bg-gradient-to-br from-blue-50/40 via-white to-blue-50/20 p-2.5 text-xs shadow-2xs">
             <div className="flex items-center gap-2">
               <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-white p-0.5 shadow-2xs ring-1 ring-stone-200">
-                <img src="/logo.png" alt="SICM" className="h-full w-full object-contain" />
+                <img
+                  src={getAssetPath('/logo.png')}
+                  alt="SICM"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('/sicm-lms/')) {
+                      target.src = '/sicm-lms/logo.png';
+                    }
+                  }}
+                  className="h-full w-full object-contain"
+                />
               </div>
               <div className="overflow-hidden min-w-0">
                 <div className="text-stone-900 font-bold text-[10px] truncate whitespace-nowrap">

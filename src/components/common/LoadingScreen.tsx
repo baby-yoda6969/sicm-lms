@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { getAssetPath } from '@/lib/utils';
+
 interface LoadingScreenProps {
   message?: string;
 }
@@ -25,8 +27,14 @@ export default function LoadingScreen({ message }: LoadingScreenProps) {
             }}
           >
             <img
-              src="/logo.png"
+              src={getAssetPath('/logo.png')}
               alt="SICM Logo"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.includes('/sicm-lms/')) {
+                  target.src = '/sicm-lms/logo.png';
+                }
+              }}
               className="size-full object-contain filter drop-shadow-md select-none pointer-events-none"
             />
           </div>
