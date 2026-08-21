@@ -270,12 +270,24 @@ export function getAdminGeneratedDailyTimetable(dateStr: string): AdminDailyGene
   return generateAdminDailyScheduleForDate(dateStr);
 }
 
-// Save Admin generated timetable & broadcast update to all tabs/components
+import { db } from './firebase/config';
+import { doc, setDoc } from 'firebase/firestore';
+
+// Save Admin generated timetable & broadcast update to all tabs/components + Firestore
 export function saveAdminGeneratedDailyTimetable(data: AdminDailyGeneration) {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(`sicm_admin_daily_schedule_${data.date}`, JSON.stringify(data));
       window.dispatchEvent(new CustomEvent('sicm_timetable_updated', { detail: data }));
+
+      // Synchronize with Cloud Firestore (sicm-dec29)
+      try {
+        setDoc(doc(db, 'daily_timetables', data.date), data, { merge: true }).catch((err) => {
+          console.warn('Firestore cloud sync notice:', err.message);
+        });
+      } catch (err) {
+        // Safe offline bypass
+      }
     } catch (e) {
       console.warn('Could not save admin daily timetable to storage', e);
     }
