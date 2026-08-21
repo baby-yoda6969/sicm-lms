@@ -42,6 +42,7 @@ export default function Sidebar() {
   const teacherNav = [
     { name: 'Dashboard', href: '/teacher', icon: LayoutDashboard },
     { name: 'Teaching Schedule', href: '/teacher/timetable', icon: CalendarCheck },
+    { name: 'Marks & Internal Assessment', href: '/teacher/marks', icon: Award },
     { name: 'Mark Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
     { name: 'QR Session', href: '/teacher/qr-session', icon: QrCode },
     { name: 'Session Registers', href: '/teacher/history', icon: FileSpreadsheet },

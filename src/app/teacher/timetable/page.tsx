@@ -234,16 +234,24 @@ export default function TeacherDailySchedulePage() {
 
                           {/* Actions */}
                           <td className="py-4 px-5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                            <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                              <Link
+                                href={`/teacher/marks?sectionId=${c.section?.id || 'sec-2'}&subjectCode=${c.subject?.code || 'BCA401'}`}
+                                className="px-2.5 py-1.5 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold text-xs transition-all shadow-2xs inline-flex items-center gap-1"
+                                title="Enter Internal Assessment & Marks"
+                              >
+                                <Award className="size-3 text-purple-700" />
+                                <span>Marks</span>
+                              </Link>
                               <Link
                                 href={`/teacher/attendance?timetableId=${c.id}&date=${selectedDate}`}
-                                className="px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-all shadow-2xs"
+                                className="px-2.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-all shadow-2xs"
                               >
                                 Register
                               </Link>
                               <Link
                                 href={`/teacher/qr-session?timetableId=${c.id}&date=${selectedDate}`}
-                                className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-1"
                               >
                                 <QrCode className="size-3" />
                                 <span>Smart QR</span>

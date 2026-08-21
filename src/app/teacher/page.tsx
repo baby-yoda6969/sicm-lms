@@ -505,6 +505,13 @@ export default function TeacherDashboard() {
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
                       <Link
+                        href={`/teacher/marks?subjectCode=${c.subject?.code || 'BCA401'}`}
+                        className="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors border border-purple-200"
+                        title="Enter Marks & Internal Assessment"
+                      >
+                        <Award className="h-4 w-4" />
+                      </Link>
+                      <Link
                         href={`/teacher/attendance?timetableId=${c.timetableId}&date=${todayDate}`}
                         className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all"
                       >
