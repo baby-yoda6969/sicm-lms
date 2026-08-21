@@ -1,6 +1,9 @@
 // Shared Dynamic Daily Timetable Store for SICM
 // Full Real-Time Database Synchronization & Conflict-Free Master Solver
 
+import { db } from './firebase/config';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+
 export interface DailyTimetablePeriod {
   id: string;
   slotNumber: number;
@@ -361,9 +364,6 @@ export function getAdminGeneratedDailyTimetable(dateStr: string): AdminDailyGene
   return generateAdminDailyScheduleForDate(dateStr);
 }
 
-import { db } from './firebase/config';
-import { doc, setDoc } from 'firebase/firestore';
-
 // Save Admin generated timetable & broadcast update to all tabs/components + Firestore
 export function saveAdminGeneratedDailyTimetable(data: AdminDailyGeneration) {
   if (typeof window !== 'undefined') {
@@ -383,6 +383,68 @@ export function saveAdminGeneratedDailyTimetable(data: AdminDailyGeneration) {
       console.warn('Could not save admin daily timetable to storage', e);
     }
   }
+}
+
+// Real-Time Universal Subscription Function
+// Synchronizes changes across Admin, Faculty, and Students instantly via Firestore + CustomEvents + Storage Events
+export function subscribeToDailyTimetable(
+  dateStr: string,
+  onUpdate: (data: AdminDailyGeneration) => void
+): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  // 1. Fire initial local cached data immediately
+  const initial = getAdminGeneratedDailyTimetable(dateStr);
+  onUpdate(initial);
+
+  // 2. Custom local window event listener
+  const handleLocalEvent = (e: any) => {
+    if (e.detail?.date === dateStr) {
+      onUpdate(e.detail);
+    }
+  };
+  window.addEventListener('sicm_timetable_updated', handleLocalEvent);
+
+  // 3. Browser cross-tab storage event listener
+  const handleStorageEvent = (e: StorageEvent) => {
+    if (e.key === `sicm_admin_daily_schedule_${dateStr}` && e.newValue) {
+      try {
+        const parsed = JSON.parse(e.newValue);
+        onUpdate(parsed);
+      } catch (err) {
+        // ignore
+      }
+    }
+  };
+  window.addEventListener('storage', handleStorageEvent);
+
+  // 4. Cloud Firestore Live Real-Time Snapshot Listener (Cross-Device & Cross-User)
+  let unsubscribeFirestore = () => {};
+  try {
+    const unsub = onSnapshot(doc(db, 'daily_timetables', dateStr), (snapshot) => {
+      if (snapshot.exists()) {
+        const remoteData = snapshot.data() as AdminDailyGeneration;
+        if (remoteData && remoteData.currentTimetables) {
+          try {
+            localStorage.setItem(`sicm_admin_daily_schedule_${dateStr}`, JSON.stringify(remoteData));
+          } catch {}
+          onUpdate(remoteData);
+        }
+      }
+    }, (err) => {
+      console.warn('Firestore real-time subscription note:', err.message);
+    });
+    unsubscribeFirestore = unsub;
+  } catch (err) {
+    // Offline fallback
+  }
+
+  // Return full cleanup function
+  return () => {
+    window.removeEventListener('sicm_timetable_updated', handleLocalEvent);
+    window.removeEventListener('storage', handleStorageEvent);
+    unsubscribeFirestore();
+  };
 }
 
 // Reassign a substitute or teacher on a specific slot and save

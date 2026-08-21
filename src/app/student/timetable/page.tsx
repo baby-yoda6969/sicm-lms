@@ -16,6 +16,7 @@ import {
 import { getAssetPath } from '@/lib/utils';
 import {
   getStudentDailySchedule,
+  subscribeToDailyTimetable,
   DailyTimetablePeriod,
   AdminDailyGeneration,
 } from '@/lib/dailyTimetableStore';
@@ -28,22 +29,22 @@ export default function StudentDailyTimetablePage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loadSchedule = () => {
-      setLoading(true);
-      const { generation, classes } = getStudentDailySchedule(
-        user?.sectionName || 'BCA 2nd Year',
-        selectedDate
-      );
-      setGenerationMeta(generation);
-      setDailySchedule(classes);
+    setLoading(true);
+    const unsubscribe = subscribeToDailyTimetable(selectedDate, (gen) => {
+      setGenerationMeta(gen);
+      const search = (user?.sectionName || 'BCA 2nd Year').toLowerCase();
+      const filtered = gen.currentTimetables.filter((slot) => {
+        return (
+          slot.section.name.toLowerCase().includes(search) ||
+          slot.section.id === user?.sectionName
+        );
+      });
+      const sorted = [...filtered].sort((a, b) => a.slotNumber - b.slotNumber);
+      setDailySchedule(sorted);
       setLoading(false);
-    };
+    });
 
-    loadSchedule();
-
-    const handleUpdate = () => loadSchedule();
-    window.addEventListener('sicm_timetable_updated', handleUpdate);
-    return () => window.removeEventListener('sicm_timetable_updated', handleUpdate);
+    return () => unsubscribe();
   }, [user?.sectionName, selectedDate]);
 
   const handleSetToday = () => {

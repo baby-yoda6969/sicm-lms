@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import {
   getTeacherDailySchedule,
+  subscribeToDailyTimetable,
   DailyTimetablePeriod,
   AdminDailyGeneration,
 } from '@/lib/dailyTimetableStore';
@@ -31,22 +32,21 @@ export default function TeacherDailySchedulePage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loadSchedule = () => {
-      setLoading(true);
-      const { generation, classes } = getTeacherDailySchedule(
-        user?.teacherProfileId || user?.name || 'Dr. Pratibha Rao',
-        selectedDate
-      );
-      setGenerationMeta(generation);
-      setDailyClasses(classes);
+    setLoading(true);
+    const unsubscribe = subscribeToDailyTimetable(selectedDate, (gen) => {
+      setGenerationMeta(gen);
+      const search = (user?.teacherProfileId || user?.name || 'Dr. Pratibha Rao').toLowerCase();
+      const filtered = gen.currentTimetables.filter((slot) => {
+        const isPrimary = slot.teacher?.user?.name.toLowerCase().includes(search) || slot.teacher?.id === user?.teacherProfileId;
+        const isSub = slot.substituteTeacher?.user?.name.toLowerCase().includes(search) || slot.substituteTeacherId === user?.teacherProfileId;
+        return isPrimary || isSub;
+      });
+      const sorted = [...filtered].sort((a, b) => a.slotNumber - b.slotNumber);
+      setDailyClasses(sorted);
       setLoading(false);
-    };
+    });
 
-    loadSchedule();
-
-    const handleUpdate = () => loadSchedule();
-    window.addEventListener('sicm_timetable_updated', handleUpdate);
-    return () => window.removeEventListener('sicm_timetable_updated', handleUpdate);
+    return () => unsubscribe();
   }, [user?.teacherProfileId, user?.name, selectedDate]);
 
   const handleSetToday = () => {
