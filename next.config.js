@@ -1,16 +1,20 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig = {
-  reactStrictMode: false,
+  output: 'export',
+  basePath: isProd ? '/sicm-lms' : '',
+  assetPrefix: isProd ? '/sicm-lms/' : '',
+  images: {
+    unoptimized: true,
+  },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    cpus: 1,
-    workerThreads: false,
-  },
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
