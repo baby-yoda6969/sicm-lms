@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import {
-  Sparkles,
   Calendar,
+  CalendarCheck,
   CheckCircle2,
   AlertTriangle,
   Play,
