@@ -14,6 +14,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { safeFetchJson } from '@/lib/apiHelper';
+import { getAssetPath } from '@/lib/utils';
 
 export default function StudentDailyTimetablePage() {
   const { user } = useAuth();
