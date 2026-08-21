@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 
 import { safeFetchJson } from '@/lib/apiHelper';
+import { saveAdminGeneratedDailyTimetable, generateAdminDailyScheduleForDate } from '@/lib/dailyTimetableStore';
 
 export default function AdminDailyTimetablePage() {
   const { user } = useAuth();
@@ -141,9 +142,11 @@ export default function AdminDailyTimetablePage() {
 
       if (ok && data?.success) {
         setGenerationResult(data);
+        saveAdminGeneratedDailyTimetable(generateAdminDailyScheduleForDate(selectedDate));
         await fetchDailyStatus();
       } else {
         // Local simulation if static host
+        saveAdminGeneratedDailyTimetable(generateAdminDailyScheduleForDate(selectedDate));
         setGenerationResult({
           totalSlotsGenerated: 162,
           dayOfWeek: 'THURSDAY',
