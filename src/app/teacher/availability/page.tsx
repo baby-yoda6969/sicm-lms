@@ -13,12 +13,20 @@ import {
   Calendar,
   Sparkles,
 } from 'lucide-react';
+import { safeFetchJson } from '@/lib/apiHelper';
 
 export default function TeacherAvailabilityPage() {
   const { user } = useAuth();
-  const [timeSlots, setTimeSlots] = useState<any[]>([]);
+  const [timeSlots, setTimeSlots] = useState<any[]>([
+    { id: 'ts-1', slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+    { id: 'ts-2', slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+    { id: 'ts-3', slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+    { id: 'ts-4', slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+    { id: 'ts-5', slotNumber: 5, name: 'Period 5', startTime: '01:15 PM', endTime: '02:15 PM' },
+    { id: 'ts-6', slotNumber: 6, name: 'Period 6', startTime: '02:15 PM', endTime: '03:15 PM' },
+  ]);
   const [availabilityMap, setAvailabilityMap] = useState<Record<string, string>>({}); // key: `${day}_${slotId}` -> 'AVAILABLE' | 'UNAVAILABLE' | 'PARTIAL'
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -28,22 +36,33 @@ export default function TeacherAvailabilityPage() {
     const fetchAvailability = async () => {
       try {
         setLoading(true);
-        if (user?.teacherProfileId) {
-          const res = await fetch(`/api/teacher/availability?teacherId=${user.teacherProfileId}`);
-          const data = await res.json();
-
-          if (data.timeSlots) {
-            setTimeSlots(data.timeSlots);
+        const { ok, data } = await safeFetchJson(
+          `/api/teacher/availability?teacherId=${user?.teacherProfileId || 't-1'}`,
+          undefined,
+          {
+            timeSlots: [
+              { id: 'ts-1', slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+              { id: 'ts-2', slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+              { id: 'ts-3', slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+              { id: 'ts-4', slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+              { id: 'ts-5', slotNumber: 5, name: 'Period 5', startTime: '01:15 PM', endTime: '02:15 PM' },
+              { id: 'ts-6', slotNumber: 6, name: 'Period 6', startTime: '02:15 PM', endTime: '03:15 PM' },
+            ],
+            availabilities: [],
           }
+        );
 
-          const map: Record<string, string> = {};
-          data.availabilities?.forEach((a: any) => {
-            map[`${a.dayOfWeek}_${a.timeSlotId}`] = a.status;
-          });
-          setAvailabilityMap(map);
+        if (data?.timeSlots) {
+          setTimeSlots(data.timeSlots);
         }
+
+        const map: Record<string, string> = {};
+        data?.availabilities?.forEach((a: any) => {
+          map[`${a.dayOfWeek}_${a.timeSlotId}`] = a.status;
+        });
+        setAvailabilityMap(map);
       } catch (err) {
-        console.error(err);
+        console.warn(err);
       } finally {
         setLoading(false);
       }

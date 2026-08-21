@@ -16,129 +16,383 @@ import {
 import { safeFetchJson } from '@/lib/apiHelper';
 import { getAssetPath } from '@/lib/utils';
 
+const WEEKDAYS = [
+  { day: 'MONDAY', label: 'Mon', full: 'Monday' },
+  { day: 'TUESDAY', label: 'Tue', full: 'Tuesday' },
+  { day: 'WEDNESDAY', label: 'Wed', full: 'Wednesday' },
+  { day: 'THURSDAY', label: 'Thu', full: 'Thursday' },
+  { day: 'FRIDAY', label: 'Fri', full: 'Friday' },
+  { day: 'SATURDAY', label: 'Sat', full: 'Saturday' },
+];
+
+const STUDENT_MASTER_SCHEDULE: Record<string, any[]> = {
+  MONDAY: [
+    {
+      id: 'st-mon-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
+      teacher: { user: { name: 'Prof. K. R. Sharma' } },
+      room: { roomNumber: 'Lab 2' },
+      status: 'ACTIVE',
+    },
+    {
+      id: 'st-mon-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA402', name: 'Software Engineering', color: '#0284C7' },
+      teacher: { user: { name: 'Dr. Suresh Kumar' } },
+      room: { roomNumber: 'Room 302' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-mon-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA404', name: 'Operating Systems & Architecture', color: '#16A34A' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Hall 302' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-mon-4',
+      timeSlot: { slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+      subject: { code: 'BCA403', name: 'Database Management Systems', color: '#8B5CF6' },
+      teacher: { user: { name: 'Prof. Ananya Sen' } },
+      room: { roomNumber: 'Room 304' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-mon-5',
+      timeSlot: { slotNumber: 5, name: 'Period 5', startTime: '01:15 PM', endTime: '02:15 PM' },
+      subject: { code: 'BCA405', name: 'Computer Networks', color: '#EA580C' },
+      teacher: { user: { name: 'Prof. Ramesh Bhat' } },
+      room: { roomNumber: 'Room 302' },
+      status: 'UPCOMING',
+    },
+  ],
+  TUESDAY: [
+    {
+      id: 'st-tue-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA404', name: 'Operating Systems & Architecture', color: '#16A34A' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Hall 302' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-tue-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
+      teacher: { user: { name: 'Prof. K. R. Sharma' } },
+      room: { roomNumber: 'Lab 2' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-tue-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA403', name: 'Database Management Systems', color: '#8B5CF6' },
+      teacher: { user: { name: 'Prof. Ananya Sen' } },
+      room: { roomNumber: 'Room 304' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-tue-4',
+      timeSlot: { slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+      subject: { code: 'BCA402', name: 'Software Engineering', color: '#0284C7' },
+      teacher: { user: { name: 'Dr. Suresh Kumar' } },
+      room: { roomNumber: 'Room 302' },
+      status: 'UPCOMING',
+    },
+  ],
+  WEDNESDAY: [
+    {
+      id: 'st-wed-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
+      teacher: { user: { name: 'Prof. K. R. Sharma' } },
+      room: { roomNumber: 'Lab 2' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-wed-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA405', name: 'Computer Networks', color: '#EA580C' },
+      teacher: { user: { name: 'Prof. Ramesh Bhat' } },
+      room: { roomNumber: 'Room 302' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-wed-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA406', name: 'DBMS Laboratory Session', color: '#7C3AED' },
+      teacher: { user: { name: 'Prof. Ananya Sen' } },
+      room: { roomNumber: 'Lab 3' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-wed-4',
+      timeSlot: { slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+      subject: { code: 'BCA404', name: 'Operating Systems & Architecture', color: '#16A34A' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Hall 302' },
+      status: 'UPCOMING',
+    },
+  ],
+  THURSDAY: [
+    {
+      id: 'st-thu-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Lab 3' },
+      status: 'ACTIVE',
+    },
+    {
+      id: 'st-thu-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA402', name: 'Database Management Systems', color: '#0284C7' },
+      teacher: { user: { name: 'Prof. Suresh Kumar' } },
+      room: { roomNumber: 'Room 204' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-thu-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA403', name: 'Operating Systems', color: '#16A34A' },
+      teacher: { user: { name: 'Prof. Narayana S.' } },
+      room: { roomNumber: 'Room 204' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-thu-4',
+      timeSlot: { slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+      subject: { code: 'BCA404', name: 'Software Engineering', color: '#8B5CF6' },
+      teacher: { user: { name: 'Dr. Rekha M.' } },
+      room: { roomNumber: 'Room 204' },
+      status: 'UPCOMING',
+    },
+  ],
+  FRIDAY: [
+    {
+      id: 'st-fri-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA403', name: 'Database Management Systems', color: '#8B5CF6' },
+      teacher: { user: { name: 'Prof. Ananya Sen' } },
+      room: { roomNumber: 'Room 304' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-fri-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA401', name: 'Python Programming', color: '#0D2F6B' },
+      teacher: { user: { name: 'Prof. K. R. Sharma' } },
+      room: { roomNumber: 'Lab 2' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-fri-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA404', name: 'Operating Systems & Architecture', color: '#16A34A' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Hall 302' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-fri-4',
+      timeSlot: { slotNumber: 4, name: 'Period 4', startTime: '11:45 AM', endTime: '12:45 PM' },
+      subject: { code: 'BCA405', name: 'Computer Networks', color: '#EA580C' },
+      teacher: { user: { name: 'Prof. Ramesh Bhat' } },
+      room: { roomNumber: 'Room 302' },
+      status: 'UPCOMING',
+    },
+  ],
+  SATURDAY: [
+    {
+      id: 'st-sat-1',
+      timeSlot: { slotNumber: 1, name: 'Period 1', startTime: '08:30 AM', endTime: '09:30 AM' },
+      subject: { code: 'BCA406', name: 'Python & Linux Lab Session', color: '#7C3AED' },
+      teacher: { user: { name: 'Dr. Pratibha Rao' } },
+      room: { roomNumber: 'Lab 3' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-sat-2',
+      timeSlot: { slotNumber: 2, name: 'Period 2', startTime: '09:30 AM', endTime: '10:30 AM' },
+      subject: { code: 'BCA402', name: 'Software Engineering Seminar', color: '#0284C7' },
+      teacher: { user: { name: 'Dr. Suresh Kumar' } },
+      room: { roomNumber: 'Seminar Hall' },
+      status: 'UPCOMING',
+    },
+    {
+      id: 'st-sat-3',
+      timeSlot: { slotNumber: 3, name: 'Period 3', startTime: '10:45 AM', endTime: '11:45 AM' },
+      subject: { code: 'BCA401', name: 'Industry Problem Solving Session', color: '#0D2F6B' },
+      teacher: { user: { name: 'Prof. K. R. Sharma' } },
+      room: { roomNumber: 'Hall 302' },
+      status: 'UPCOMING',
+    },
+  ],
+};
+
+function getDayNameFromDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00');
+  const dayIndex = d.getDay();
+  const map = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  return map[dayIndex] || 'MONDAY';
+}
+
 export default function StudentDailyTimetablePage() {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [dailySchedule, setDailySchedule] = useState<any[]>([]);
-  const [dayOfWeek, setDayOfWeek] = useState<string>('THURSDAY');
-  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [activeDay, setActiveDay] = useState<string>(() => {
+    const todayDay = getDayNameFromDate(new Date().toISOString().split('T')[0]);
+    return todayDay === 'SUNDAY' ? 'MONDAY' : todayDay;
+  });
 
-  // Fetch Daily Schedule
-  const fetchDailyTimetable = async (dateToFetch?: string) => {
-    const target = dateToFetch || selectedDate;
-    try {
-      setLoading(true);
-      const studentProfileId = user?.studentProfileId || '';
-      const sectionId = user?.sectionId || '';
-      const { ok, data } = await safeFetchJson(
-        `/api/timetable?date=${target}&studentProfileId=${studentProfileId}&sectionId=${sectionId}`,
-        undefined,
-        {
-          dayOfWeek: 'THURSDAY',
-          timetables: [
-            {
-              id: 'tt-1',
-              timeSlot: { name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
-              subject: { name: 'Python Programming', code: 'BCA401', color: '#0D2F6B' },
-              teacher: { user: { name: 'Dr. Pratibha Rao' } },
-              room: { roomNumber: 'Lab 3' },
-              status: 'COMPLETED',
-            },
-            {
-              id: 'tt-2',
-              timeSlot: { name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00', endTime: '11:00' },
-              subject: { name: 'Database Management Systems', code: 'BCA402', color: '#0284C7' },
-              teacher: { user: { name: 'Prof. Suresh Kumar' } },
-              room: { roomNumber: 'Room 204' },
-              status: 'ACTIVE',
-            },
-            {
-              id: 'tt-3',
-              timeSlot: { name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15', endTime: '12:15' },
-              subject: { name: 'Operating Systems', code: 'BCA403', color: '#16A34A' },
-              teacher: { user: { name: 'Prof. Narayana S.' } },
-              room: { roomNumber: 'Room 204' },
-              status: 'UPCOMING',
-            },
-            {
-              id: 'tt-4',
-              timeSlot: { name: 'Period 4 (12:15 - 01:15 PM)', startTime: '12:15', endTime: '13:15' },
-              subject: { name: 'Software Engineering', code: 'BCA404', color: '#8B5CF6' },
-              teacher: { user: { name: 'Dr. Rekha M.' } },
-              room: { roomNumber: 'Room 204' },
-              status: 'UPCOMING',
-            },
-          ],
-        }
-      );
-      if (data?.timetables) {
-        setDailySchedule(data.timetables);
-        setDayOfWeek(data.dayOfWeek || 'THURSDAY');
-      }
-    } catch (e) {
-      console.warn('Error loading student timetable', e);
-    } finally {
-      setLoading(false);
-    }
+  const [dailySchedule, setDailySchedule] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Sync activeDay when date picker changes
+  const handleDateChange = (newDate: string) => {
+    setSelectedDate(newDate);
+    const day = getDayNameFromDate(newDate);
+    setActiveDay(day === 'SUNDAY' ? 'MONDAY' : day);
   };
 
+  // Sync date when day tab is clicked
+  const handleSelectDayTab = (dayName: string) => {
+    setActiveDay(dayName);
+    const curr = new Date();
+    const dayIndexMap: Record<string, number> = {
+      SUNDAY: 0,
+      MONDAY: 1,
+      TUESDAY: 2,
+      WEDNESDAY: 3,
+      THURSDAY: 4,
+      FRIDAY: 5,
+      SATURDAY: 6,
+    };
+    const targetDayIndex = dayIndexMap[dayName] || 1;
+    const currentDayIndex = curr.getDay();
+    const diff = (targetDayIndex - currentDayIndex + 7) % 7;
+    curr.setDate(curr.getDate() + diff);
+    setSelectedDate(curr.toISOString().split('T')[0]);
+  };
+
+  // Fetch Daily Schedule
   useEffect(() => {
+    const fetchDailyTimetable = async () => {
+      try {
+        setLoading(true);
+        const daySchedule = STUDENT_MASTER_SCHEDULE[activeDay] || STUDENT_MASTER_SCHEDULE.THURSDAY;
+
+        const { ok, data } = await safeFetchJson(
+          `/api/timetable?date=${selectedDate}&studentProfileId=${user?.studentProfileId || 's-1'}&sectionId=${user?.sectionId || 'sec-2'}`,
+          undefined,
+          {
+            timetables: daySchedule,
+            dayOfWeek: activeDay,
+          }
+        );
+
+        if (data?.timetables && data.timetables.length > 0) {
+          setDailySchedule(data.timetables);
+        } else {
+          setDailySchedule(daySchedule);
+        }
+      } catch (e) {
+        setDailySchedule(STUDENT_MASTER_SCHEDULE[activeDay] || STUDENT_MASTER_SCHEDULE.THURSDAY);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchDailyTimetable();
-  }, [selectedDate, user?.studentProfileId, user?.sectionId]);
+  }, [selectedDate, activeDay, user?.studentProfileId, user?.sectionId]);
 
   const handleSetToday = () => {
     const todayStr = new Date().toISOString().split('T')[0];
-    setSelectedDate(todayStr);
+    handleDateChange(todayStr);
   };
 
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
 
   return (
     <AppShell>
-      <div className="space-y-6 max-w-7xl mx-auto py-2">
-        {/* Top Control Bar with Simplistic Light Blue Styling */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="space-y-5 max-w-7xl mx-auto py-2">
+        {/* Top Control Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/80">
           <div className="space-y-0.5">
-            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-              Class Lecture Time-Table
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-stone-900 tracking-tight">
+                Class Lecture Time-Table
+              </h1>
+              <span className="rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200 uppercase tracking-wider">
+                Cohort Schedule
+              </span>
+            </div>
             <p className="text-xs text-stone-500 font-medium">
               Cohort: <strong>{user?.sectionName || 'BCA 2nd Year'}</strong> • Seshadripuram Institute of Commerce & Management
             </p>
           </div>
 
-          {/* Clean Controls (Only Today and Date Input) */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Today Button Only */}
+          {/* Quick Date and Today Controls */}
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={handleSetToday}
-              className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                 isToday
                   ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
-                  : 'bg-white border-stone-200 text-stone-700 hover:bg-sky-50 hover:text-blue-700'
+                  : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50 hover:text-stone-900'
               }`}
             >
               Today
             </button>
 
-            {/* Date Picker */}
             <input
               type="date"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-bold text-stone-800 shadow-xs focus:border-blue-500 outline-none font-mono cursor-pointer"
+              onChange={(e) => handleDateChange(e.target.value)}
+              className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-stone-800 shadow-2xs focus:border-blue-500 outline-none font-mono cursor-pointer"
             />
           </div>
         </div>
 
-        {/* Master Institutional Timetable Document Card in Light Blue Palette */}
-        <div className="rounded-3xl border border-sky-200/80 bg-white shadow-lg overflow-hidden">
-          {/* Institutional Header Banner in Simplistic Light Sky Theme */}
-          <div className="border-b border-sky-200 bg-gradient-to-r from-sky-50 via-blue-50/60 to-white text-stone-900 p-6 sm:p-7">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-              <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-sky-200">
+        {/* 6 Weekday Quick Filter Tabs */}
+        <div className="flex rounded-xl bg-white border border-stone-200 p-1.5 shadow-2xs gap-1 overflow-x-auto">
+          {WEEKDAYS.map((w) => {
+            const isSelected = activeDay === w.day;
+            const periodCount = STUDENT_MASTER_SCHEDULE[w.day]?.length || 0;
+            return (
+              <button
+                key={w.day}
+                type="button"
+                onClick={() => handleSelectDayTab(w.day)}
+                className={`flex items-center justify-between gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 transition-all cursor-pointer min-w-28 ${
+                  isSelected
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                }`}
+              >
+                <span>{w.full}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-500'
+                  }`}
+                >
+                  {periodCount} Periods
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Master Institutional Timetable Document Card */}
+        <div className="rounded-2xl border border-stone-200 bg-white shadow-xs overflow-hidden">
+          {/* Institutional Header Banner */}
+          <div className="border-b border-stone-200 bg-gradient-to-r from-stone-50 via-blue-50/40 to-white text-stone-900 p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="flex size-13 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-2xs ring-1 ring-stone-200">
                   <img
                     src={getAssetPath('/logo.png')}
                     alt="SICM Emblem"
@@ -152,28 +406,28 @@ export default function StudentDailyTimetablePage() {
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700 block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 block">
                     Seshadripuram Educational Trust
                   </span>
-                  <h2 className="text-lg sm:text-xl font-bold tracking-tight text-stone-900">
+                  <h2 className="text-base sm:text-lg font-bold tracking-tight text-stone-900">
                     SESHADRIPURAM INSTITUTE OF COMMERCE & MANAGEMENT
                   </h2>
-                  <p className="text-xs text-stone-600 font-medium">
+                  <p className="text-xs text-stone-500 font-medium">
                     Department of Computer Applications • Academic Year 2026-2027
                   </p>
                 </div>
               </div>
 
               {/* Scholar Meta Box */}
-              <div className="bg-white rounded-2xl px-4 py-3 border border-sky-200 shadow-xs text-left sm:text-right shrink-0 space-y-0.5">
-                <p className="text-xs sm:text-sm font-bold text-stone-900">
+              <div className="bg-white rounded-xl px-3.5 py-2.5 border border-stone-200 shadow-2xs text-left sm:text-right shrink-0 space-y-0.5">
+                <p className="text-xs font-bold text-stone-900">
                   SCHOLAR: {user?.name || 'Aarav Sharma'} ({user?.rollNumber || '22BCA001'})
                 </p>
-                <p className="text-xs text-sky-800 font-mono font-semibold">
-                  {dayOfWeek} • {selectedDate}
+                <p className="text-xs text-blue-700 font-mono font-semibold">
+                  {activeDay} • {selectedDate}
                 </p>
-                <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2.5 py-0.5 rounded-full border border-sky-200">
-                  Cohort: {user?.sectionName || 'BCA 2nd Year'}
+                <span className="inline-block mt-0.5 text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">
+                  {dailySchedule.length} Scheduled Periods
                 </span>
               </div>
             </div>
@@ -183,117 +437,112 @@ export default function StudentDailyTimetablePage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-stone-200 bg-sky-50/40 text-xs font-bold uppercase tracking-wider text-sky-900">
-                  <th className="py-4 px-6 text-center w-24 border-r border-stone-200">Period</th>
-                  <th className="py-4 px-6 w-48 border-r border-stone-200">Time Interval</th>
-                  <th className="py-4 px-6 border-r border-stone-200">Course & Subject</th>
-                  <th className="py-4 px-6 w-52 border-r border-stone-200">Faculty In-Charge</th>
-                  <th className="py-4 px-6 w-48 border-r border-stone-200">Hall / Room</th>
-                  <th className="py-4 px-6 text-right w-52">Attendance Status</th>
+                <tr className="border-b border-stone-200 bg-stone-50 text-[10px] font-bold uppercase tracking-wider text-stone-600">
+                  <th className="py-3 px-5 text-center w-20 border-r border-stone-200">Period</th>
+                  <th className="py-3 px-5 w-44 border-r border-stone-200">Time Interval</th>
+                  <th className="py-3 px-5 border-r border-stone-200">Course & Subject</th>
+                  <th className="py-3 px-5 w-48 border-r border-stone-200">Faculty In-Charge</th>
+                  <th className="py-3 px-5 w-36 border-r border-stone-200">Lecture Hall</th>
+                  <th className="py-3 px-5 text-right w-44">Attendance Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100 text-xs sm:text-sm">
+              <tbody className="divide-y divide-stone-100 text-xs">
                 {dailySchedule.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-16 text-center text-stone-400">
-                      <Coffee className="h-9 w-9 text-stone-300 mx-auto mb-2" />
-                      <p className="font-serif font-bold text-stone-700">No Lectures Scheduled For {dayOfWeek}</p>
-                      <p className="text-xs text-stone-400 mt-1">Official timetable published each morning following teacher confirmations.</p>
+                    <td colSpan={6} className="py-12 text-center text-stone-400">
+                      <Coffee className="size-8 text-stone-300 mx-auto mb-2" />
+                      <p className="font-bold text-stone-700">No Lectures Scheduled for {activeDay}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">Self-study & collegiate project preparation on {selectedDate}.</p>
                     </td>
                   </tr>
                 ) : (
-                  dailySchedule.map((slot: any) => {
-                    const isSubstituted = !!slot.substituteTeacherId;
-                    const teacherName = slot.substituteTeacher?.user?.name || slot.teacher?.user?.name || 'Assigned Faculty';
-                    const isLab = slot.subject?.name?.toLowerCase().includes('lab');
+                  dailySchedule.map((c: any) => {
+                    const isLab = c.subject?.name?.toLowerCase().includes('lab');
 
                     return (
-                      <React.Fragment key={slot.id}>
+                      <React.Fragment key={c.id}>
                         {/* Period Row */}
-                        <tr className="hover:bg-sky-50/50 transition-colors">
+                        <tr className="hover:bg-stone-50/70 transition-colors">
                           {/* Period # */}
-                          <td className="py-5 px-6 text-center font-serif font-extrabold text-base text-stone-900 border-r border-stone-100 bg-sky-50/20">
-                            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-900 font-serif font-bold text-sm border border-sky-200">
-                              {slot.timeSlot.slotNumber}
+                          <td className="py-4 px-5 text-center font-bold text-stone-900 border-r border-stone-100 bg-stone-50/30">
+                            <span className="inline-flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-900 font-bold text-xs border border-blue-200">
+                              {c.timeSlot?.slotNumber || 1}
                             </span>
                           </td>
 
                           {/* Time Interval */}
-                          <td className="py-5 px-6 border-r border-stone-100 font-mono text-stone-800 font-bold">
-                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-sky-900">
-                              <Clock className="h-4 w-4 text-sky-600 shrink-0" />
-                              <span>{slot.timeSlot.startTime} – {slot.timeSlot.endTime}</span>
+                          <td className="py-4 px-5 border-r border-stone-100 font-mono text-stone-800 font-bold">
+                            <div className="flex items-center gap-1 text-xs text-stone-900">
+                              <Clock className="size-3.5 text-blue-600 shrink-0" />
+                              <span>{c.timeSlot?.startTime} – {c.timeSlot?.endTime}</span>
                             </div>
-                            <span className="text-[11px] text-stone-400 font-normal mt-0.5 block">60 Mins Duration</span>
+                            <span className="text-[10px] text-stone-400 font-normal mt-0.5 block">60 Mins Duration</span>
                           </td>
 
                           {/* Course & Subject */}
-                          <td className="py-5 px-6 border-r border-stone-100">
-                            <div className="flex items-center gap-2.5 flex-wrap">
-                              <span className="font-mono text-xs font-extrabold text-blue-900 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg">
-                                {slot.subject.code}
+                          <td className="py-4 px-5 border-r border-stone-100">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-mono text-[11px] font-bold text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+                                {c.subject?.code}
                               </span>
-                              <span className="font-serif font-bold text-sm sm:text-base text-stone-900">
-                                {slot.subject.name}
+                              <span className="font-bold text-stone-900">
+                                {c.subject?.name}
                               </span>
                               {isLab && (
-                                <span className="rounded-md bg-cyan-50 border border-cyan-200 text-cyan-900 text-[10px] font-bold px-2 py-0.5">
+                                <span className="rounded bg-cyan-50 border border-cyan-200 text-cyan-800 text-[9px] font-bold px-1.5 py-0.2">
                                   LAB PRACTICAL
-                                </span>
-                              )}
-                              {isSubstituted && (
-                                <span className="rounded-md bg-amber-50 border border-amber-300 text-amber-950 text-[10px] font-extrabold px-2 py-0.5">
-                                  SUBSTITUTE FACULTY
                                 </span>
                               )}
                             </div>
                           </td>
 
                           {/* Faculty In-Charge */}
-                          <td className="py-5 px-6 border-r border-stone-100 font-medium text-stone-700">
-                            <div className="font-bold text-stone-900 text-xs sm:text-sm">{teacherName}</div>
-                            <div className="text-xs text-stone-400 mt-0.5">Department of CA</div>
+                          <td className="py-4 px-5 border-r border-stone-100 font-medium text-stone-700">
+                            <div className="flex items-center gap-1.5">
+                              <User className="size-3.5 text-stone-400 shrink-0" />
+                              <span className="font-bold text-stone-900">{c.teacher?.user?.name || 'Faculty'}</span>
+                            </div>
+                            <div className="text-[10px] text-stone-400 mt-0.5">Professor In-Charge</div>
                           </td>
 
                           {/* Venue / Room */}
-                          <td className="py-5 px-6 border-r border-stone-100 font-medium text-stone-700">
+                          <td className="py-4 px-5 border-r border-stone-100 font-medium text-stone-700">
                             <div className="flex items-center gap-1.5">
-                              <MapPin className="h-4 w-4 text-stone-400 shrink-0" />
-                              <span className="font-mono font-bold text-stone-900 text-xs sm:text-sm">{slot.room.roomNumber}</span>
+                              <MapPin className="size-3.5 text-stone-400 shrink-0" />
+                              <span className="font-mono font-bold text-stone-900">{c.room?.roomNumber}</span>
                             </div>
-                            <div className="text-xs text-stone-400 truncate max-w-40 mt-0.5">{slot.room.name}</div>
                           </td>
 
-                          {/* Check In Action */}
-                          <td className="py-5 px-6 text-right">
-                            <Link
-                              href="/student/qr-checkin"
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all"
-                            >
-                              <QrCode className="h-3.5 w-3.5" />
-                              <span>QR Check-In</span>
-                            </Link>
+                          {/* Attendance Status */}
+                          <td className="py-4 px-5 text-right">
+                            {c.status === 'ACTIVE' ? (
+                              <Link
+                                href="/student/qr-checkin"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all"
+                              >
+                                <QrCode className="size-3" />
+                                <span>Check-in QR</span>
+                              </Link>
+                            ) : c.status === 'COMPLETED' ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                                <CheckCircle2 className="size-3" />
+                                Present (Verified)
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-medium text-stone-400 bg-stone-100 px-2.5 py-1 rounded-md">
+                                Scheduled
+                              </span>
+                            )}
                           </td>
                         </tr>
 
-                        {/* Tea Break in Light Blue theme after Period 2 */}
-                        {slot.timeSlot.slotNumber === 2 && (
-                          <tr className="bg-sky-50/70 border-y border-sky-200">
-                            <td colSpan={6} className="py-2.5 px-6 text-center">
-                              <div className="flex items-center justify-center gap-2 text-sky-950 text-xs font-bold uppercase tracking-wider">
-                                <Coffee className="h-4 w-4 text-sky-700" />
-                                <span>10:30 AM – 10:45 AM • MORNING TEA BREAK & SHORT RECESS (15 MIN)</span>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-
-                        {/* Lunch Break in Light Blue theme after Period 4 */}
-                        {slot.timeSlot.slotNumber === 4 && (
-                          <tr className="bg-sky-50/70 border-y border-sky-200">
-                            <td colSpan={6} className="py-2.5 px-6 text-center">
-                              <div className="flex items-center justify-center gap-2 text-sky-950 text-xs font-bold uppercase tracking-wider">
-                                <span>🍱 12:45 PM – 01:15 PM • MID-DAY LUNCH RECESS (30 MIN)</span>
+                        {/* Tea Break in clean theme after Period 2 */}
+                        {c.timeSlot?.slotNumber === 2 && (
+                          <tr className="bg-amber-50/50 border-y border-amber-200/80">
+                            <td colSpan={6} className="py-2 px-5 text-center">
+                              <div className="flex items-center justify-center gap-2 text-amber-900 font-bold text-[11px]">
+                                <Coffee className="size-3.5 text-amber-600" />
+                                <span>COLLEGIATE TEA & MENTORSHIP RECESS (10:30 – 10:45 AM)</span>
                               </div>
                             </td>
                           </tr>
@@ -304,17 +553,6 @@ export default function StudentDailyTimetablePage() {
                 )}
               </tbody>
             </table>
-          </div>
-
-          {/* Institutional Document Footer */}
-          <div className="border-t border-sky-100 bg-sky-50/30 px-6 sm:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-stone-500">
-            <div className="flex items-center gap-2">
-              <span className="font-serif font-bold text-stone-800">SICM Central Academic Registry</span>
-              <span>• Official Student Timetable Schedule</span>
-            </div>
-            <div className="font-mono text-stone-400 text-xs">
-              NAAC &lsquo;A&rsquo; Accredited • BCU Affiliated
-            </div>
           </div>
         </div>
       </div>
