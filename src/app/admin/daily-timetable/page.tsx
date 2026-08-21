@@ -31,59 +31,17 @@ import {
 } from 'lucide-react';
 
 import { safeFetchJson } from '@/lib/apiHelper';
-import { saveAdminGeneratedDailyTimetable, generateAdminDailyScheduleForDate } from '@/lib/dailyTimetableStore';
+import {
+  getAdminGeneratedDailyTimetable,
+  saveAdminGeneratedDailyTimetable,
+  generateAdminDailyScheduleForDate,
+  updateSlotSubstitute,
+} from '@/lib/dailyTimetableStore';
 
 export default function AdminDailyTimetablePage() {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [dailyData, setDailyData] = useState<any>({
-    dayOfWeek: 'THURSDAY',
-    presentTeachersCount: 28,
-    absentTeachersCount: 2,
-    sections: [
-      { id: 'sec-1', name: 'BCA 1st Year' },
-      { id: 'sec-2', name: 'BCA 2nd Year' },
-      { id: 'sec-3', name: 'BCA 3rd Year' },
-      { id: 'sec-4', name: 'B.Com 1st Year' },
-      { id: 'sec-5', name: 'B.Com 2nd Year' },
-      { id: 'sec-6', name: 'BBA 1st Year' },
-    ],
-    teacherStatuses: [
-      { id: 't-1', name: 'Dr. Pratibha Rao', department: 'Computer Applications', status: 'PRESENT' },
-      { id: 't-2', name: 'Prof. Suresh Kumar', department: 'Computer Applications', status: 'PRESENT' },
-      { id: 't-3', name: 'Prof. Narayana S.', department: 'Computer Applications', status: 'PRESENT' },
-      { id: 't-4', name: 'Dr. Rekha M.', department: 'Commerce', status: 'ABSENT_TODAY', reason: 'Medical Leave' },
-      { id: 't-5', name: 'Prof. Anitha K.', department: 'Business Admin', status: 'PRESENT' },
-    ],
-    currentTimetables: [
-      {
-        id: 'tt-1',
-        timeSlot: { name: 'Period 1 (09:00 - 10:00 AM)', startTime: '09:00', endTime: '10:00' },
-        section: { name: 'BCA 2nd Year' },
-        subject: { name: 'Python Programming', code: 'BCA401', color: '#0D2F6B' },
-        teacher: { user: { name: 'Dr. Pratibha Rao' } },
-        room: { roomNumber: 'Lab 3' },
-      },
-      {
-        id: 'tt-2',
-        timeSlot: { name: 'Period 2 (10:00 - 11:00 AM)', startTime: '10:00', endTime: '11:00' },
-        section: { name: 'BCA 2nd Year' },
-        subject: { name: 'Database Management Systems', code: 'BCA402', color: '#0284C7' },
-        teacher: { user: { name: 'Prof. Suresh Kumar' } },
-        room: { roomNumber: 'Room 204' },
-      },
-      {
-        id: 'tt-3',
-        timeSlot: { name: 'Period 3 (11:15 - 12:15 PM)', startTime: '11:15', endTime: '12:15' },
-        section: { name: 'BCA 2nd Year' },
-        subject: { name: 'Corporate Accounting', code: 'BCOM201', color: '#B45309' },
-        teacher: { user: { name: 'Dr. Rekha M.' } },
-        substituteTeacher: { user: { name: 'Prof. Suresh Kumar' } },
-        substituteTeacherId: 't-2',
-        room: { roomNumber: 'Room 204' },
-      },
-    ],
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [dailyData, setDailyData] = useState<any>(() => generateAdminDailyScheduleForDate(new Date().toISOString().split('T')[0]));
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generationResult, setGenerationResult] = useState<any>(null);
@@ -111,9 +69,13 @@ export default function AdminDailyTimetablePage() {
     const target = dateToFetch || selectedDate;
     try {
       setLoading(true);
+      const localData = getAdminGeneratedDailyTimetable(target);
+      setDailyData(localData);
+
       const { ok, data } = await safeFetchJson(`/api/timetable/daily-generate?date=${target}`);
-      if (ok && data) {
+      if (ok && data?.currentTimetables && data.currentTimetables.length > 0) {
         setDailyData(data);
+        saveAdminGeneratedDailyTimetable(data);
       }
     } catch (e) {
       console.warn('Error fetching daily timetable status:', e);
@@ -124,12 +86,24 @@ export default function AdminDailyTimetablePage() {
 
   useEffect(() => {
     fetchDailyStatus();
+
+    const handleSync = (e: any) => {
+      if (e.detail?.date === selectedDate) {
+        setDailyData(e.detail);
+      }
+    };
+    window.addEventListener('sicm_timetable_updated', handleSync);
+    return () => window.removeEventListener('sicm_timetable_updated', handleSync);
   }, [selectedDate]);
 
   const handleGenerateTodayTimetable = async () => {
     try {
       setGenerating(true);
       setGenerationResult(null);
+
+      const newGen = generateAdminDailyScheduleForDate(selectedDate);
+      saveAdminGeneratedDailyTimetable(newGen);
+      setDailyData(newGen);
 
       const { ok, data } = await safeFetchJson('/api/timetable/daily-generate', {
         method: 'POST',
@@ -142,14 +116,11 @@ export default function AdminDailyTimetablePage() {
 
       if (ok && data?.success) {
         setGenerationResult(data);
-        saveAdminGeneratedDailyTimetable(generateAdminDailyScheduleForDate(selectedDate));
         await fetchDailyStatus();
       } else {
-        // Local simulation if static host
-        saveAdminGeneratedDailyTimetable(generateAdminDailyScheduleForDate(selectedDate));
         setGenerationResult({
-          totalSlotsGenerated: 162,
-          dayOfWeek: 'THURSDAY',
+          totalSlotsGenerated: newGen.currentTimetables.length,
+          dayOfWeek: newGen.dayOfWeek,
           targetDate: selectedDate,
         });
       }
@@ -172,7 +143,26 @@ export default function AdminDailyTimetablePage() {
 
     try {
       setSubmittingOverride(true);
-      const res = await fetch('/api/teacher/morning-checkin', {
+      const currentGen = getAdminGeneratedDailyTimetable(selectedDate);
+      currentGen.teacherStatuses = currentGen.teacherStatuses.map((t) => {
+        if (t.id === overrideModalTeacher.id) {
+          return {
+            ...t,
+            status: overrideStatus as any,
+            reason: overrideReason || `Dean override: ${overrideStatus}`,
+            declaredAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+        }
+        return t;
+      });
+
+      currentGen.presentTeachersCount = currentGen.teacherStatuses.filter((t) => t.status === 'PRESENT').length;
+      currentGen.absentTeachersCount = currentGen.teacherStatuses.filter((t) => t.status !== 'PRESENT').length;
+
+      saveAdminGeneratedDailyTimetable(currentGen);
+      setDailyData(currentGen);
+
+      await safeFetchJson('/api/teacher/morning-checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -183,12 +173,9 @@ export default function AdminDailyTimetablePage() {
         }),
       });
 
-      if (res.ok) {
-        setOverrideModalTeacher(null);
-        await fetchDailyStatus();
-      }
+      setOverrideModalTeacher(null);
     } catch (err) {
-      console.error(err);
+      console.warn(err);
     } finally {
       setSubmittingOverride(false);
     }
@@ -200,7 +187,15 @@ export default function AdminDailyTimetablePage() {
 
     try {
       setSavingSlot(true);
-      const res = await fetch('/api/timetable', {
+      const updatedGen = updateSlotSubstitute(
+        selectedDate,
+        editingSlot.id,
+        selectedSubstituteId || null,
+        'Assigned by Dean Office'
+      );
+      setDailyData(updatedGen);
+
+      await safeFetchJson('/api/timetable', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -209,12 +204,9 @@ export default function AdminDailyTimetablePage() {
         }),
       });
 
-      if (res.ok) {
-        setEditingSlot(null);
-        await fetchDailyStatus();
-      }
+      setEditingSlot(null);
     } catch (err) {
-      console.error(err);
+      console.warn(err);
     } finally {
       setSavingSlot(false);
     }
