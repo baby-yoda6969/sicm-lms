@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (identifier: string, pass: string, role?: string): Promise<boolean> => {
     try {
       // 1. Try server API login
-      const { ok, data } = await safeFetchJson(
+      const { ok, data } = await safeFetchJson<any>(
         '/api/auth/login',
         {
           method: 'POST',
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         null
       );
 
-      if (ok && data?.success && data?.user) {
+      if (ok && data && data.success && data.user) {
         setUser(data.user);
         if (typeof window !== 'undefined') {
           localStorage.setItem('sicm_current_user', JSON.stringify(data.user));

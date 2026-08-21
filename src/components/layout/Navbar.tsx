@@ -243,7 +243,7 @@ export default function Navbar() {
                         key={n.id}
                         onClick={() => markAsRead(n.id)}
                         className={`p-2.5 transition-colors cursor-pointer ${
-                          n.read ? 'opacity-60 hover:opacity-100' : 'bg-blue-50/40 font-medium'
+                          n.isRead ? 'opacity-60 hover:opacity-100' : 'bg-blue-50/40 font-medium'
                         }`}
                       >
                         <p className="font-semibold text-stone-800">{n.title}</p>

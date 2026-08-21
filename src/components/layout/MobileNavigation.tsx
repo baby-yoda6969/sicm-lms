@@ -15,6 +15,13 @@ import {
   Building,
 } from 'lucide-react';
 
+interface NavTab {
+  label: string;
+  href: string;
+  icon: any;
+  isPrimary?: boolean;
+}
+
 export default function MobileNavigation() {
   const pathname = usePathname();
   const { user } = useAuth();
@@ -23,7 +30,7 @@ export default function MobileNavigation() {
 
   const role = user.role;
 
-  const studentTabs = [
+  const studentTabs: NavTab[] = [
     { label: 'Home', href: '/student', icon: Home },
     { label: 'Courses', href: '/student/courses', icon: BookOpen },
     { label: 'Check-In', href: '/student/qr-checkin', icon: QrCode, isPrimary: true },
@@ -31,7 +38,7 @@ export default function MobileNavigation() {
     { label: 'Schedule', href: '/student/timetable', icon: Calendar },
   ];
 
-  const teacherTabs = [
+  const teacherTabs: NavTab[] = [
     { label: 'Home', href: '/teacher', icon: Home },
     { label: 'Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
     { label: 'Timetable', href: '/teacher/timetable', icon: Calendar },
@@ -39,7 +46,7 @@ export default function MobileNavigation() {
     { label: 'Assignments', href: '/teacher/assignments', icon: BookOpen },
   ];
 
-  const adminTabs = [
+  const adminTabs: NavTab[] = [
     { label: 'Home', href: '/admin', icon: Home },
     { label: 'Timetable', href: '/admin/timetable', icon: Calendar },
     { label: 'Students', href: '/admin/students', icon: Users },

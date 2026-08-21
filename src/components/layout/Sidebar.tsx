@@ -20,6 +20,7 @@ import {
   CalendarClock,
   UserCheck,
   Settings,
+  Award,
 } from 'lucide-react';
 
 export default function Sidebar() {

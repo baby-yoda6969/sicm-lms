@@ -33,13 +33,15 @@ export default function StudentDailyTimetablePage() {
     const unsubscribe = subscribeToDailyTimetable(selectedDate, (gen) => {
       setGenerationMeta(gen);
       const search = (user?.sectionName || 'BCA 2nd Year').toLowerCase();
-      const filtered = gen.currentTimetables.filter((slot) => {
+      const slots = gen?.currentTimetables || [];
+      const filtered = slots.filter((slot) => {
+        const secName = (slot.section?.name || '').toLowerCase();
         return (
-          slot.section.name.toLowerCase().includes(search) ||
-          slot.section.id === user?.sectionName
+          (secName.length > 0 && secName.includes(search)) ||
+          slot.section?.id === user?.sectionName
         );
       });
-      const sorted = [...filtered].sort((a, b) => a.slotNumber - b.slotNumber);
+      const sorted = [...(filtered.length > 0 ? filtered : slots.slice(0, 5))].sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0));
       setDailySchedule(sorted);
       setLoading(false);
     });

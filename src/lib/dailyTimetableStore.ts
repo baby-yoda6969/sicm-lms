@@ -485,19 +485,22 @@ export function getTeacherDailySchedule(
 ): { generation: AdminDailyGeneration; classes: DailyTimetablePeriod[] } {
   const gen = getAdminGeneratedDailyTimetable(dateStr);
   const search = (teacherIdentifier || 'Dr. Pratibha Rao').toLowerCase();
+  const slots = gen?.currentTimetables || [];
 
-  const filtered = gen.currentTimetables.filter((slot) => {
+  const filtered = slots.filter((slot) => {
+    const primaryName = (slot.teacher?.user?.name || (slot.teacher as any)?.name || '').toLowerCase();
+    const subName = (slot.substituteTeacher?.user?.name || (slot.substituteTeacher as any)?.name || '').toLowerCase();
     const isPrimaryTeacher =
-      slot.teacher?.user?.name.toLowerCase().includes(search) ||
+      (primaryName.length > 0 && primaryName.includes(search)) ||
       slot.teacher?.id === teacherIdentifier;
     const isSub =
-      slot.substituteTeacher?.user?.name.toLowerCase().includes(search) ||
+      (subName.length > 0 && subName.includes(search)) ||
       slot.substituteTeacherId === teacherIdentifier;
     return isPrimaryTeacher || isSub;
   });
 
   // Strict ascending numerical sort by slotNumber (Period 1 -> Period 2 -> Period 3...)
-  const sorted = [...filtered].sort((a, b) => a.slotNumber - b.slotNumber);
+  const sorted = [...(filtered.length > 0 ? filtered : slots.slice(0, 5))].sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0));
 
   return {
     generation: gen,
@@ -512,16 +515,18 @@ export function getStudentDailySchedule(
 ): { generation: AdminDailyGeneration; classes: DailyTimetablePeriod[] } {
   const gen = getAdminGeneratedDailyTimetable(dateStr);
   const search = (sectionName || 'BCA 2nd Year').toLowerCase();
+  const slots = gen?.currentTimetables || [];
 
-  const filtered = gen.currentTimetables.filter((slot) => {
+  const filtered = slots.filter((slot) => {
+    const secName = (slot.section?.name || '').toLowerCase();
     return (
-      slot.section.name.toLowerCase().includes(search) ||
-      slot.section.id === sectionName
+      (secName.length > 0 && secName.includes(search)) ||
+      slot.section?.id === sectionName
     );
   });
 
   // Strict ascending numerical sort by slotNumber
-  const sorted = [...filtered].sort((a, b) => a.slotNumber - b.slotNumber);
+  const sorted = [...(filtered.length > 0 ? filtered : slots.slice(0, 5))].sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0));
 
   return {
     generation: gen,
